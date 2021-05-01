@@ -3,6 +3,7 @@
 
 #define NOMBRE_DE_TACHES_A_FAIRE 10
 
+
 struct tache{
 	int duree_de_fabrication;
 	int date_limite;
@@ -11,12 +12,13 @@ struct tache{
 	int pi;
 	int effectue;
 	struct tache* suivant;
+	struct tache* precedent;
 };
 
 typedef struct tache* p_tache;
 
 
-int random(int debut, int fin){
+int random_int(int debut, int fin){
 	return debut + rand()%(fin-debut);
 }
 
@@ -24,16 +26,33 @@ int random(int debut, int fin){
 p_tache creation_tache(){
 	p_tache tache = (p_tache) malloc(sizeof(struct tache));
 
-	tache->duree_de_fabrication = random(2, 10);
-	tache->date_limite          = random(tache->duree_de_fabrication, 50);
+	tache->duree_de_fabrication = random_int(2, 10);
+	tache->date_limite          = random_int(tache->duree_de_fabrication, NOMBRE_DE_TACHES_A_FAIRE*5);
 	tache->date_de_fin          = tache->date_limite;
-	tache->penalite             = random(1, 20);
+	tache->penalite             = random_int(1, 20);
 	tache->pi                   = 0;
 	tache->effectue             = 0;
 	tache->suivant              = NULL;
+	tache->precedent            = NULL;
 
 	return tache;
 }
+
+p_tache creation_tache_non_aleatoire(int duree, int dat_lim, int pen){
+	p_tache tache = (p_tache) malloc(sizeof(struct tache));
+
+	tache->duree_de_fabrication = duree;
+	tache->date_limite          = dat_lim;
+	tache->date_de_fin          = tache->date_limite;
+	tache->penalite             = pen;
+	tache->pi                   = 0;
+	tache->effectue             = 0;
+	tache->suivant              = NULL;
+	tache->precedent            = NULL;
+
+	return tache;
+}
+
 p_tache test_creation_tache(int n){
 	p_tache tache = (p_tache) malloc(sizeof(struct tache));
 
@@ -43,6 +62,7 @@ p_tache test_creation_tache(int n){
 	tache->pi                   = 0;
 	tache->effectue             = 0;
 	tache->suivant              = NULL;
+	tache->precedent            = NULL;
 
 	return tache;
 }
@@ -55,6 +75,7 @@ p_tache test2_creation_tache(int n){
 	tache->pi                   = 0;
 	tache->effectue             = 0;
 	tache->suivant              = NULL;
+	tache->precedent            = NULL;
 
 	return tache;
 }
@@ -120,6 +141,7 @@ void print_chaine(p_tache tete){
 	}
 }
 
+
 // Affiche une tache sous forme 'graphique'
 void print_tache_edt(p_tache tache){
 	int i = 0;
@@ -136,8 +158,20 @@ void print_edt(p_tache tete){
 	p_tache iter = tete;
 	int i = 1;
 	while(iter){
-		printf("Tache %2d (pen = %2d)(pi = %2d): ", i++, iter->penalite, iter->pi);
+		printf("Tache %2d (pen = %2d)(pi = %2d):", i++, iter->penalite, iter->pi);
 		print_tache_edt(iter);
 		iter = iter->suivant;
+	}
+}
+
+
+// Affiche un emploi du temps des taches
+void print_edt_final(p_tache tete){
+	p_tache iter = tete;
+	int i = 1;
+	while(iter){
+		printf("Tache %2d (pen = %2d)(pi = %2d):", i++, iter->penalite, iter->pi);
+		print_tache_edt(iter);
+		iter = iter->precedent;
 	}
 }

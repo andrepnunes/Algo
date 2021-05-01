@@ -11,10 +11,12 @@ p_tache fusion(p_tache liste_1, p_tache liste_2)
     if (liste_1->date_limite <= liste_2->date_limite) {   // '<=' ordre croissant 
         liste_fusione = liste_1;
         liste_fusione->suivant = fusion(liste_1->suivant, liste_2);
+        liste_fusione->suivant->precedent = liste_fusione;
     }
     else {
         liste_fusione = liste_2;
         liste_fusione->suivant = fusion(liste_1, liste_2->suivant);
+        liste_fusione->suivant->precedent = liste_fusione;
     }
     return (liste_fusione);
 }
