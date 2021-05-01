@@ -7,6 +7,7 @@ struct tache{
 	int duree_de_fabrication;
 	int date_limite;
 	int date_de_fin;
+	int date_de_debut;
 	int penalite;
 	int pi;
 	int effectue;
@@ -16,7 +17,7 @@ struct tache{
 typedef struct tache* p_tache;
 
 
-int random(int debut, int fin){
+int chiffre_aleatoire(int debut, int fin){
 	return debut + rand()%(fin-debut);
 }
 
@@ -24,10 +25,11 @@ int random(int debut, int fin){
 p_tache creation_tache(){
 	p_tache tache = (p_tache) malloc(sizeof(struct tache));
 
-	tache->duree_de_fabrication = random(2, 10);
-	tache->date_limite          = random(tache->duree_de_fabrication, 50);
+	tache->duree_de_fabrication = chiffre_aleatoire(2, 10);
+	tache->date_limite          = chiffre_aleatoire(tache->duree_de_fabrication, 50);
 	tache->date_de_fin          = tache->date_limite;
-	tache->penalite             = random(1, 20);
+	tache->date_de_debut		= -1;
+	tache->penalite             = chiffre_aleatoire(1, 20);
 	tache->pi                   = 0;
 	tache->effectue             = 0;
 	tache->suivant              = NULL;
@@ -39,6 +41,7 @@ p_tache test_creation_tache(int n){
 
 	tache->duree_de_fabrication = 1;
 	tache->date_de_fin          = n;
+	tache->date_de_debut		= -1;
 	tache->penalite             = 1;
 	tache->pi                   = 0;
 	tache->effectue             = 0;
@@ -51,6 +54,7 @@ p_tache test2_creation_tache(int n){
 
 	tache->duree_de_fabrication = 4;
 	tache->date_de_fin          = n;
+	tache->date_de_debut		= -1;
 	tache->penalite             = 100;
 	tache->pi                   = 0;
 	tache->effectue             = 0;
@@ -123,6 +127,7 @@ void print_chaine(p_tache tete){
 // Affiche une tache sous forme 'graphique'
 void print_tache_edt(p_tache tache){
 	int i = 0;
+
 	int date_debut = tache->date_de_fin - tache->duree_de_fabrication;
 	for (; i < date_debut; ++i)
 		printf(" ");
