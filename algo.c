@@ -37,7 +37,7 @@ int ordonancement(int n, p_tache tete, int* tableau){ // sans decalages
 }
 
 
-//
+//Commence la premiere tache a la date 0 et les autres taches à la fin de la tache d'avant 
 void decalage(p_tache tete)
 {
 	int debut,pi,temp1,temp2,tache_skip;
@@ -152,26 +152,19 @@ int main(int argc, char const *argv[])
 	
 	printf("%d.", taches_final[0]);
 
-
-
-
-	printf("\n\n New emploi du temps: \n----------------\n\n");
+	//decalage des taches
+	printf("\n\nNew emploi du temps: \n----------------\n\n");
 	decalage(tete);
 	printf("fin decalage\n");
 	print_edt(tete);
 
 	for (int i = 0; i < NOMBRE_DE_TACHES_A_FAIRE; ++i) taches_faites[i] = 0;
 	printf("\nPenalite evitee maximale = %d\n", ordonancement(NOMBRE_DE_TACHES_A_FAIRE, tete, taches_faites));
-	
-	for (int i = 0; i < 10; i++)
-	{
-		printf("taches_faites = %d |",taches_faites[i]);
-	}
-	
+
 	printf("\n");
 	//effacer les 0
     
-    taches_final = 0;
+    nb_taches_final = 0;
     for (int i = 0; i < NOMBRE_DE_TACHES_A_FAIRE; ++i)
     	if (taches_faites[i]) nb_taches_final++;
 
@@ -184,7 +177,7 @@ int main(int argc, char const *argv[])
 	for (int i = 1; i < nb_taches_final; ++i)
 		printf("%d, ", taches_final[nb_taches_final - i]);
 	
-	printf("%d.", taches_final[0]);
+	printf("%d.\n", taches_final[0]);
 	free_liste(tete);
 	return 0;
 }
