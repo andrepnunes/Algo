@@ -7,7 +7,7 @@ struct tache{
 	int duree_de_fabrication;
 	int date_limite;
 	int date_de_fin;
-	int date_de_debut;
+	int date_de_debut ;
 	int penalite;
 	int pi;
 	int effectue;
