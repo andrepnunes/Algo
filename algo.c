@@ -38,7 +38,7 @@ int ordonancement(int n, p_tache tete, int* tableau){ // sans decalages
 
 
 //
-int decalage(p_tache tete)
+void decalage(p_tache tete)
 {
 	int debut,pi,temp1,temp2,tache_skip;
 	debut 	= 0;
@@ -106,7 +106,6 @@ int decalage(p_tache tete)
 		iter = iter -> suivant;
 		
 	}
-	return ordonancement(NOMBRE_DE_TACHES_A_FAIRE, tete, taches_faites);
 }
 		
 int main(int argc, char const *argv[])
