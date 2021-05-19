@@ -1,6 +1,10 @@
 #include "taches.h"
 
-// fusionne deux listes en triant les elements
+/*
+ * Division:
+ *
+ * Fusionne deux listes en triant les elements
+ */
 p_tache fusion(p_tache liste_1, p_tache liste_2)
 {
     p_tache liste_fusione = NULL;
@@ -11,18 +15,19 @@ p_tache fusion(p_tache liste_1, p_tache liste_2)
     if (liste_1->date_limite <= liste_2->date_limite) {   // '<=' ordre croissant 
         liste_fusione = liste_1;
         liste_fusione->suivant = fusion(liste_1->suivant, liste_2);
-        liste_fusione->suivant->precedent = liste_fusione;
     }
     else {
         liste_fusione = liste_2;
         liste_fusione->suivant = fusion(liste_1, liste_2->suivant);
-        liste_fusione->suivant->precedent = liste_fusione;
     }
     return (liste_fusione);
 }
  
-
-// divise une liste chaînee en deux
+/*
+ * Division:
+ *
+ * Divise une liste chaînee en deux
+ */
 void division(p_tache tete, p_tache* liste_1, p_tache* liste_2)
 {
 	/*
@@ -48,6 +53,12 @@ void division(p_tache tete, p_tache* liste_1, p_tache* liste_2)
     milieu_de_liste->suivant = NULL;
 }
 
+/*
+ * Tri Fusion:
+ *
+ * Divise une liste de taille 'n', en 'n' listes de taille 1
+ * Fusionne les listes 2 a 2 en les triant
+ */
 void tri_fusion(p_tache* p_tete)
 {
     p_tache tete = *p_tete;
