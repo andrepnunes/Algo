@@ -179,9 +179,10 @@ int main(int argc, char const *argv[])
 	tete = append_tache(creation_tache_non_aleatoire(2,33,15),tete);
 	tete = append_tache(creation_tache_non_aleatoire(8,50,19),tete);
 #endif
+
 	// affichage de la liste cainee
-	//printf("\n\nListe des taches a faire: \n");
-	//print_chaine(tete);
+	printf("\n\nListe des taches a faire: \n");
+	print_chaine(tete);
 	
 	// Triage par rapport à la date limite
 	tri_fusion(&tete);
@@ -190,31 +191,27 @@ int main(int argc, char const *argv[])
 	// identification de la tache comptable de date de fin la plus proche
 	recherche_tache_compatible(NOMBRE_DE_TACHES_A_FAIRE, tete);
 	
-	printf("debut\n");
 	printf("\n\nListe triee des taches a faire: \n");
 	print_chaine(tete);
 	printf("\n\nEmploi du temps: \n----------------\n\n");
 	print_edt(tete);
-	
-	p_tache queue = tete;
-	while(queue->suivant) queue = queue->suivant;
 
 	int taches_faites[NOMBRE_DE_TACHES_A_FAIRE];
 	for (int i = 0; i < NOMBRE_DE_TACHES_A_FAIRE; ++i) taches_faites[i] = 0;
 	printf("\nPenalite evitee maximale = %d\n", ordonancement(NOMBRE_DE_TACHES_A_FAIRE, tete, taches_faites));
 
-
-
-	//effacer les 0
+	// On compte le nombre total de taches effectues (nombre de cases non nulles dans 'taches_faites')
     int nb_taches_final = 0;
     for (int i = 0; i < NOMBRE_DE_TACHES_A_FAIRE; ++i)
     	if (taches_faites[i]) nb_taches_final++;
 
+	// On crée le tableau 'taches_final' avec les valeurs non nulles du tableau 'taches_faites'
     int k = 0;
     int* taches_final =(int*) (malloc(nb_taches_final*sizeof(int)));
     for (int i = 0; i < NOMBRE_DE_TACHES_A_FAIRE; ++i)
     	if (taches_faites[i]) taches_final[k++] = taches_faites[i];
 	
+	// Pour l'affichage 
 	int counter = 1;
 	int index = nb_taches_final-1;
 	int prev = 0;
@@ -231,6 +228,7 @@ int main(int argc, char const *argv[])
 		counter++;
 		iter = iter->suivant;
 	}
+	recherche_tache_compatible(NOMBRE_DE_TACHES_A_FAIRE, tete);
 
 	print_edt(tete);
 
@@ -240,7 +238,7 @@ int main(int argc, char const *argv[])
 	
 	printf("%d.", taches_final[0]);
 
-
+	free(taches_final);
 	free_liste(tete);
 	return 0;
 }
