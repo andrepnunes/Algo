@@ -22,7 +22,27 @@ p_tache fusion(p_tache liste_1, p_tache liste_2)
     }
     return (liste_fusione);
 }
+
+p_tache fusion_opt(p_tache liste_1, p_tache liste_2)
+{
+    p_tache liste_fusione = NULL;
  
+    if (!liste_1) return (liste_2);
+    if (!liste_2) return (liste_1);
+ 	
+ 	float a = 2*liste_1->penalite - liste_1->duree_de_fabrication + 1.5*liste_1->date_limite;
+ 	float b = 2*liste_2->penalite - liste_2->duree_de_fabrication + 1.5*liste_2->date_limite;
+	if( a <= b ){
+        liste_fusione = liste_1;
+        liste_fusione->suivant = fusion_opt(liste_1->suivant, liste_2);
+    }
+    else {
+        liste_fusione = liste_2;
+        liste_fusione->suivant = fusion_opt(liste_1, liste_2->suivant);
+    }
+    return (liste_fusione);
+}
+
 /*
  * Division:
  *
@@ -74,4 +94,21 @@ void tri_fusion(p_tache* p_tete)
     tri_fusion(&liste_2);
  
     *p_tete = fusion(liste_1, liste_2);
+}
+
+void tri_fusion_opt(p_tache* p_tete)
+{
+    p_tache tete = *p_tete;
+    p_tache liste_1;
+    p_tache liste_2;
+ 
+    if (!tete) return;
+    if (!tete->suivant) return;
+ 
+    division(tete, &liste_1, &liste_2);
+ 
+    tri_fusion_opt(&liste_1);
+    tri_fusion_opt(&liste_2);
+ 
+    *p_tete = fusion_opt(liste_1, liste_2);
 }

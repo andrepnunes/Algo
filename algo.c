@@ -23,7 +23,7 @@ int ordonancement(int n, p_tache tete, int* tableau){
 
 	/***** Hypothèse 1: La tâche courante ne fait pas partie de l'ordonnancement optimal *****/
 
-
+	//if(iter->penalite/iter->duree_de_fabrication > iter->suivant->penalite/iter->suivant->duree_de_fabrication )
 	// Dans le cadre de l'hypothèse effectuée, l'ordonnancement optimal est celui de la tâche suivante
 	// On stockera l'ordonnancement optimal dans le tableau temp_2. 
 	int* temp_2 = (int*)(malloc((n-1)*sizeof(int)));
@@ -144,6 +144,75 @@ int ordonancement(int n, p_tache tete, int* tableau){
 	}
 }
 
+// Determine quelles taches doivent etre faites pour minimiser les penalites
+int ordonancement_opt(int n, p_tache tete, int* tableau){
+
+	if (!n) return 0;
+
+	// iter prend la valeur du néme element de la liste
+	p_tache iter = tete;
+	for (int i = 1; i < n; ++i) iter = iter->suivant;
+
+	// On décale toutes les tâches non compatibles (car leur date de fin doit être inférieure à la date de début de la tâche courante) 
+	p_tache iter_decalage = tete;
+	int counter = 0;
+
+	int flag_aucun_decalage_effectue = 1;
+	// parcourt toutes les taches de la tete a la tache courante
+	while(iter_decalage && counter < n-1){
+		if (iter_decalage->date_de_fin > iter->date_de_fin - iter->duree_de_fabrication) // si une tache est incompatible (sa date de fin est apres la date de debut courante)
+		{
+			if ( iter->date_de_fin - iter->duree_de_fabrication >= iter_decalage->duree_de_fabrication) // s'il est possible de la decaler sans depasser 0 
+			{
+				// On sauvegarde leur date de fin actuelle
+				tache_decalee[n-1][counter] = iter_decalage->date_de_fin;
+				penalites[counter] = 0;
+
+				// On décale la date de fin
+				iter_decalage->date_de_fin = iter->date_de_fin - iter->duree_de_fabrication;
+
+				// On indique que des décalages ont été éffectués
+				flag_aucun_decalage_effectue = 0;
+			}else{
+
+				// S'il n'est pas possible de décaler une tache (car la duree de fabrication est trop longue)
+				// On supprime sa penalité pour qu'elle soit ignorée par l'algorithme
+				if (iter_decalage->penalite)
+				{
+					// On sauvegarde sa penalité dans un tableau pour pouvoir la récupérer plus tard
+					penalites[counter] = iter_decalage->penalite;
+
+					// On supprime la pénalité de la tache
+					iter_decalage->penalite = 0;
+				}
+			}
+		}
+		counter++;
+		iter_decalage = iter_decalage->suivant;
+	}
+
+	// Si des décalages ont été faits, il faut mettre à jour les taches compatibles (pi)
+	if (!flag_aucun_decalage_effectue) recherche_tache_compatible(NOMBRE_DE_TACHES_A_FAIRE, tete);
+
+	int a = iter->penalite + ordonancement_opt(iter->pi, tete, tableau + 1);
+
+	// remise des penalites supprimees
+	iter_decalage = tete;
+	counter = 0;
+	while(iter_decalage && counter < n){
+		if (penalites[counter]){
+			iter_decalage->penalite = penalites[counter];
+			penalites[counter] = 0;
+		}
+		counter++;
+		iter_decalage = iter_decalage->suivant;
+	}
+
+	tableau[0]=n;
+
+	return a;
+}
+
 #define aleatoire 1
 int main(int argc, char const *argv[])
 {
@@ -156,18 +225,6 @@ int main(int argc, char const *argv[])
 	p_tache tete = creation_tache();
 	for (int i = 0; i < NOMBRE_DE_TACHES_A_FAIRE - 1; ++i) tete = append_tache(creation_tache(),tete);
 #else
-
-//	p_tache tete = creation_tache_non_aleatoire(4,47,18);
-//	tete = append_tache(creation_tache_non_aleatoire(6,40,13),tete);
-//	tete = append_tache(creation_tache_non_aleatoire(8,39,12),tete);
-//	tete = append_tache(creation_tache_non_aleatoire(6,38,8),tete);
-//	tete = append_tache(creation_tache_non_aleatoire(9,25,15),tete);
-//	tete = append_tache(creation_tache_non_aleatoire(6,23,7),tete);
-//	tete = append_tache(creation_tache_non_aleatoire(9,20,6),tete);
-//	tete = append_tache(creation_tache_non_aleatoire(4,17,16),tete);
-//	tete = append_tache(creation_tache_non_aleatoire(3,16,2),tete);
-//	tete = append_tache(creation_tache_non_aleatoire(4,15,12),tete);
-
 	p_tache tete = creation_tache_non_aleatoire(3,4,12);
 	tete = append_tache(creation_tache_non_aleatoire(5,5, 12),tete);
 	tete = append_tache(creation_tache_non_aleatoire(5,8, 17),tete);
@@ -185,7 +242,7 @@ int main(int argc, char const *argv[])
 	print_chaine(tete);
 	
 	// Triage par rapport à la date limite
-	tri_fusion(&tete);
+	tri_fusion_opt(&tete);
 
 	// Calcul de Pi
 	// identification de la tache comptable de date de fin la plus proche
@@ -198,7 +255,7 @@ int main(int argc, char const *argv[])
 
 	int taches_faites[NOMBRE_DE_TACHES_A_FAIRE];
 	for (int i = 0; i < NOMBRE_DE_TACHES_A_FAIRE; ++i) taches_faites[i] = 0;
-	printf("\nPenalite evitee maximale = %d\n", ordonancement(NOMBRE_DE_TACHES_A_FAIRE, tete, taches_faites));
+	printf("\nPenalite evitee maximale = %d\n", ordonancement_opt(NOMBRE_DE_TACHES_A_FAIRE, tete, taches_faites));
 
 	// On compte le nombre total de taches effectues (nombre de cases non nulles dans 'taches_faites')
     int nb_taches_final = 0;
